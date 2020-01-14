@@ -25,6 +25,11 @@ class RedisClient
 
     protected const TTL_QUERY_PREFIX = '_ttl';
 
+    protected const DEFAULT_HOST = 'redis';
+    protected const DEFAULT_PORT = '6379';
+    protected const DEFAULT_SCHEME = 'tcp';
+    protected const DEFAULT_DB = '5';
+
     /**
      * @var mixed|null
      */
@@ -56,6 +61,15 @@ class RedisClient
         string $redisClientClass = \Credis_Client::class
     ) {
         $this->cacheConfig = $config->get(self::PERSISTENT_QUERY_CONFIG);
+        // Setting up default redis cache configs, if they arent set in app/etc/env.php
+        if (!$this->cacheConfig['redis']) {
+            $this->cacheConfig['redis'] = [
+                'host' => self::DEFAULT_HOST,
+                'port' => self::DEFAULT_PORT,
+                'scheme' => self::DEFAULT_SCHEME,
+                'database' => self::DEFAULT_DB
+            ];
+        }
         $this->redisClientClass = $redisClientClass;
         $this->client = $this->redisClientFactory($this->cacheConfig['redis']);
         $this->config = $config;
